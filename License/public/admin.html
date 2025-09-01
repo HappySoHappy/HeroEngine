@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="styles.css"> <!-- You can link your CSS here -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+            .form-container input, .form-container select {
+                width: 100%;
+                padding: 8px;
+                margin: 10px 0;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            .form-container button {
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+                .form-container button:hover {
+                    background-color: #45a049;
+                }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Panel</h1>
+    </header>
+
+    <div class="container">
+        <!-- Form for adding/editing users -->
+        <div class="form-container">
+            <h2>Create or Edit User</h2>
+            <form id="userForm" action="admin/create-or-edit-user" method="POST">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="discordId">Discord ID:</label>
+                <input type="text" id="discordId" name="discordId">
+
+                <label for="ipAddress">IP Address:</label>
+                <input type="text" id="ipAddress" name="ipAddress">
+
+                <label for="licenseExpiresAt">License Expiration:</label>
+                <input type="datetime-local" id="licenseExpiresAt" name="licenseExpiresAt" required>
+
+                <label for="licenseStatus">License Status:</label>
+                <select id="licenseStatus" name="licenseStatus">
+                    <option value="0">Inactive</option>
+                    <option value="1">Active</option>
+                </select>
+
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+
+        <!-- Table displaying the list of users -->
+        <h2>User List</h2>
+        <table id="userTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Discord ID</th>
+                    <th>IP Address</th>
+                    <th>License Key</th>
+                    <th>Expires At</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic user rows will be added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Function to dynamically populate the table with user data
+        async function fetchUserData() {
+            const response = await fetch('/admin/get-users');
+            const users = await response.json();
+
+            const tableBody = document.querySelector('#userTable tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.discordId}</td>
+                    <td>${user.ipAddress}</td>
+                    <td>${user.licensekey}</td>
+                    <td>${user.licenseExpiresAt}</td>
+                    <td>${user.licenseStatus === 1 ? 'Active' : 'Inactive'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Call the function to fetch user data when the page loads
+        window.onload = fetchUserData;
+    </script>
+</body>
+</html>
